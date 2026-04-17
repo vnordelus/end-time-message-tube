@@ -1,168 +1,95 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>End-Time Message Tube | Master Archive</title>
+    <title>End-Time Message Tube | Ultimate Archive</title>
     <style>
-        :root {
-            --bg: #050505;
-            --sidebar: #000000;
-            --card: #141414;
-            --accent: #ff0000;
-            --gold: #d4af37;
-            --text: #ffffff;
-            --text-dim: #999;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
-
-        /* Sidebar */
-        aside { width: 280px; background: var(--sidebar); border-right: 1px solid #222; display: flex; flex-direction: column; overflow-y: auto; }
-        .logo-box { padding: 30px 20px; text-align: center; border-bottom: 1px solid #111; }
-        .logo-text { font-size: 1.6rem; font-weight: 900; color: var(--accent); letter-spacing: -1px; }
-        .nav-section { padding: 20px 0; }
-        .nav-header { font-size: 0.75rem; color: #444; text-transform: uppercase; padding: 10px 25px; letter-spacing: 1px; font-weight: bold; }
-        .nav-link { padding: 12px 25px; cursor: pointer; color: var(--text-dim); transition: 0.2s; display: block; text-decoration: none; }
-        .nav-link:hover, .nav-link.active { background: #111; color: #fff; }
-        .nav-link.active { color: var(--gold); border-left: 4px solid var(--gold); }
-
-        /* Main Content */
-        main { flex: 1; overflow-y: auto; padding: 40px; background: linear-gradient(180deg, #0a0a0a 0%, #050505 100%); }
-        .page-header { margin-bottom: 40px; border-bottom: 1px solid #222; padding-bottom: 20px; }
-        .page-title { font-size: 2rem; color: var(--gold); }
-
+        :root { --bg: #050505; --gold: #d4af37; --red: #ff0000; --card: #121212; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        aside { width: 260px; background: #000; border-right: 1px solid #222; padding: 20px; display: flex; flex-direction: column; }
+        .logo { color: var(--red); font-size: 1.5rem; font-weight: 900; margin-bottom: 30px; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        .nav { color: #888; cursor: pointer; padding: 12px; border-radius: 5px; margin-bottom: 5px; transition: 0.3s; }
+        .nav:hover, .nav.active { background: #222; color: #fff; }
+        main { flex: 1; padding: 40px; overflow-y: auto; background: linear-gradient(180deg, #0a0a0a, #050505); }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-
-        /* Media Card */
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; border: 1px solid #1a1a1a; }
-        .card:hover { transform: translateY(-5px); border-color: var(--gold); }
-        .thumb-box { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; }
-        .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
-        .play-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); opacity: 0; transition: 0.3s; }
-        .card:hover .play-overlay { opacity: 1; }
-        
+        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #222; cursor: pointer; transition: 0.3s; }
+        .card:hover { border-color: var(--gold); transform: translateY(-5px); }
+        .thumb-container { width: 100%; aspect-ratio: 16/9; background: #111; position: relative; display: flex; align-items: center; justify-content: center; }
+        .thumb-container img { width: 100%; height: 100%; object-fit: cover; position: absolute; }
+        .play-btn { position: relative; z-index: 2; font-size: 3rem; opacity: 0.8; text-shadow: 0 0 10px black; }
         .info { padding: 15px; }
-        .category-tag { font-size: 0.65rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; }
-        .title { font-size: 1rem; font-weight: bold; line-height: 1.4; margin-bottom: 8px; }
-        .desc { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; }
-
-        /* Video Player Modal */
-        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-container { width: 90%; max-width: 1100px; position: relative; }
-        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,1); border: 1px solid #333; }
-        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .close-btn { position: absolute; top: -50px; right: 0; color: #fff; font-size: 2rem; cursor: pointer; background: none; border: none; }
-
-        /* Scroller */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
+        .tag { color: var(--gold); font-size: 0.7rem; text-transform: uppercase; font-weight: bold; }
+        .v-title { font-size: 1rem; margin: 8px 0; font-weight: 600; line-height: 1.3; }
+        #playerModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 999; align-items: center; justify-content: center; }
+        .player-content { width: 90%; max-width: 1000px; position: relative; }
+        .video-box { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 10px; overflow: hidden; border: 1px solid #333; }
+        .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .close { position: absolute; top: -50px; right: 0; color: white; font-size: 1.5rem; cursor: pointer; background: #333; border: none; padding: 5px 15px; border-radius: 5px; }
     </style>
 </head>
 <body>
-
     <aside>
-        <div class="logo-box"><div class="logo-text">ETM TUBE</div></div>
-        <div class="nav-section">
-            <div class="nav-header">Library</div>
-            <div class="nav-link active" onclick="filter('all')">Everything</div>
-            <div class="nav-link" onclick="filter('sermon')">Prophetic Sermons</div>
-            <div class="nav-link" onclick="filter('testimony')">Testimonies</div>
-            <div class="nav-link" onclick="filter('music')">Message Music</div>
-            <div class="nav-link" onclick="filter('art')">History & Art</div>
-        </div>
-        <div class="nav-section">
-            <div class="nav-header">Official Links</div>
-            <a href="https://branham.org" target="_blank" class="nav-link">Voice of God</a>
-            <a href="https://table.branham.org" target="_blank" class="nav-link">The Table</a>
-        </div>
+        <div class="logo">ETM TUBE</div>
+        <div class="nav active" onclick="show('all')">Full Library</div>
+        <div class="nav" onclick="show('sermon')">Prophetic Sermons</div>
+        <div class="nav" onclick="show('testimony')">Testimonies</div>
+        <div class="nav" onclick="show('music')">Message Music</div>
+        <div class="nav" onclick="show('history')">History & Art</div>
     </aside>
-
     <main>
-        <div class="page-header">
-            <h1 class="page-title" id="pageTitle">Comprehensive Archive</h1>
-        </div>
         <div class="grid" id="mainGrid"></div>
     </main>
-
-    <div id="modal">
-        <div class="modal-container">
-            <button class="close-btn" onclick="closePlayer()">&times; Close</button>
-            <div class="video-wrapper" id="playerBox"></div>
-            <h2 id="modalLabel" style="margin-top:20px; color:var(--gold);"></h2>
+    <div id="playerModal">
+        <div class="player-content">
+            <button class="close" onclick="closeV()">✕ CLOSE PLAYER</button>
+            <div class="video-box" id="vidFrame"></div>
+            <h2 id="vidTitle" style="margin-top:20px; color:var(--gold); font-size: 1.2rem;"></h2>
         </div>
     </div>
-
 <script>
-    const archive = [
-        // SERMONS
-        { type: 'sermon', id: 'qY_3T-p0N0s', title: 'Deep Calleth to the Deep (1954)', desc: 'The classic Washington D.C. film showing the Pillar of Fire and discernment.' },
-        { type: 'sermon', id: 'FstjV8Q_8a8', title: '20th Century Prophet Documentary', desc: 'A full historical look at the life and ministry of William Branham.' },
-        { type: 'sermon', id: 'xHq3M5C9vP8', title: 'The Pillar of Fire (Houston 1950)', desc: 'The story of the only supernatural being ever photographed.' },
-        { type: 'sermon', id: '5S5fXz7W1YI', title: 'The Revelation of the Seven Seals', desc: 'Introductory overview of the March 1963 mysteries.' },
-        
-        // TESTIMONIES
-        { type: 'testimony', id: 'nFmF1mUAn1k', title: 'Modern Testimonies of Healing', desc: 'Powerful accounts from people impacted by the End-Time Message today.' },
-        { type: 'testimony', id: 'L9YhBqV7-V4', title: 'Interview: Life with the Prophet', desc: 'Brother Pearry Green shares personal experiences and accounts.' },
-        { type: 'testimony', id: 'M0X_o6V-U08', title: 'A Man Sent From God', desc: 'Testimonies concerning the supernatural commission.' },
-
-        // MUSIC
-        { type: 'music', id: '8fL-WwV9XkY', title: 'Only Believe (Theme Hymn)', desc: 'The original campaign song that inspired millions.' },
-        { type: 'music', id: 'v_7rP0eO_L8', title: 'Hymns of the Message Hour', desc: 'A collection of worship songs from the Branham Tabernacle.' },
-        { type: 'music', id: 'w7p-9D9I7fQ', title: 'Faith Is The Substance', desc: 'Inspirational message music and spiritual worship.' },
-
-        // ART & DOCUMENTS
-        { type: 'art', id: 'T8Y-HlM8l0E', title: 'The Sunset Cloud (1963)', desc: 'Historical photos and scientific data on the Arizona cloud.' },
-        { type: 'art', id: 'nFmF1mUAn1k', title: 'The Seven Church Ages Chart', desc: 'Visual resource detailing the history of the seven ages.' }
+    const db = [
+        { cat: 'sermon', id: 'qY_3T-p0N0s', title: 'Deep Calleth to the Deep (1954)' },
+        { cat: 'sermon', id: 'FstjV8Q_8a8', title: '20th Century Prophet Documentary' },
+        { cat: 'sermon', id: 'xHq3M5C9vP8', title: 'The Pillar of Fire (1950 Witness)' },
+        { cat: 'testimony', id: 'nFmF1mUAn1k', title: 'Modern Testimonies of Healing' },
+        { cat: 'testimony', id: 'L9YhBqV7-V4', title: 'Interview with Pearry Green' },
+        { cat: 'music', id: '8fL-WwV9XkY', title: 'Only Believe (Original Recording)' },
+        { cat: 'music', id: 'v_7rP0eO_L8', title: 'Hymns of the Message Hour' },
+        { cat: 'history', id: 'T8Y-HlM8l0E', title: 'The 1963 Sunset Cloud History' }
     ];
 
-    function render(data) {
+    function show(filter) {
         const grid = document.getElementById('mainGrid');
-        grid.innerHTML = data.map(item => `
-            <div class="card" onclick="openPlayer('${item.id}', '${item.title.replace(/'/g, "\'")}')">
-                <div class="thumb-box">
-                    <img src="https://i.ytimg.com/vi/${item.id}/hqdefault.jpg" onerror="this.src='https://via.placeholder.com/480x270/111/eee?text=Resource+Loading...'">
-                    <div class="play-overlay"><span style="font-size:3rem">▶</span></div>
+        grid.innerHTML = '';
+        const filtered = filter === 'all' ? db : db.filter(x => x.cat === filter);
+        filtered.forEach(v => {
+            const thumbUrl = `https://img.youtube.com/vi/${v.id}/mqdefault.jpg`;
+            grid.innerHTML += `
+            <div class="card" onclick="openV('${v.id}', '${v.title.replace(/'/g, "\\'")}')">
+                <div class="thumb-container">
+                    <img src="${thumbUrl}" onerror="this.style.display='none'">
+                    <div class="play-btn">▶</div>
                 </div>
                 <div class="info">
-                    <span class="category-tag">${item.type}</span>
-                    <div class="title">${item.title}</div>
-                    <div class="desc">${item.desc}</div>
+                    <div class="tag">${v.cat}</div>
+                    <div class="v-title">${v.title}</div>
                 </div>
-            </div>
-        `).join('');
+            </div>`;
+        });
     }
 
-    function filter(type) {
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        event.target.classList.add('active');
-        
-        const filtered = type === 'all' ? archive : archive.filter(a => a.type === type);
-        document.getElementById('pageTitle').innerText = type.charAt(0).toUpperCase() + type.slice(1) + " Archive";
-        render(filtered);
+    function openV(id, title) {
+        document.getElementById('playerModal').style.display = 'flex';
+        document.getElementById('vidFrame').innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+        document.getElementById('vidTitle').innerText = title;
     }
 
-    function openPlayer(id, title) {
-        const modal = document.getElementById('modal');
-        const box = document.getElementById('playerBox');
-        // Using nocookie and extra allow parameters to fix playback
-        box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`;
-        document.getElementById('modalLabel').innerText = title;
-        modal.style.display = 'flex';
+    function closeV() {
+        document.getElementById('playerModal').style.display = 'none';
+        document.getElementById('vidFrame').innerHTML = '';
     }
 
-    function closePlayer() {
-        document.getElementById('modal').style.display = 'none';
-        document.getElementById('playerBox').innerHTML = '';
-    }
-
-    window.onload = () => render(archive);
+    window.onload = () => show('all');
 </script>
 </body>
 </html>
-index.html
-Displaying index.html.
